@@ -1,0 +1,35 @@
+* {
+    margin: 0;
+    padding: 0;
+    
+  }
+
+
+/* 导航侧边栏重置Element */
+.el-scrollbar{
+    height: 100%;
+        
+}
+.el-scrollbar__wrap{
+    overflow: visible;
+    overflow-x: hidden;      
+}
+.el-scrollbar__view{
+    height:100%;
+}
+/* 侧边栏滚动条 */
+.el-scrollbar__bar.is-vertical{
+    width: 12px;
+}
+
+
+
+
+
+
+
+/* 面包屑部分重置Element */
+.el-breadcrumb{
+  line-height: 4;
+  outline: none;
+}
