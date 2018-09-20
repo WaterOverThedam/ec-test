@@ -1,6 +1,5 @@
 <template>
   <div class="ec">
-    
     <div class="el-nav">
       <el-scrollbar wrap-class="list">
         <el-menu
@@ -21,7 +20,7 @@
             <el-menu-item index="/createuser" >新增客户</el-menu-item>
             <el-submenu index="1-2">
               <template slot="title">我的客户</template>
-              <el-menu-item index="1-2-1">选项1</el-menu-item>
+              <el-menu-item index="/alluser">全部</el-menu-item>
             </el-submenu>
             <!-- <el-menu-item-group title="分组" > -->
             <el-submenu index="1-3">
@@ -64,9 +63,9 @@
             <i class="el-icon-document"></i>
             <span slot="title">导航三</span>
           </el-menu-item>
-          <el-menu-item index="4">
+          <el-menu-item index="/setting">
             <i class="el-icon-setting"></i>
-            <span slot="title">导航四</span>
+            <span slot="title">功能设置</span>
           </el-menu-item>
         </el-menu>
       </el-scrollbar>  
@@ -117,9 +116,7 @@ export default {
       },
       handleSelect(key, keyPath) {
         console.log(this.$route.name)
-        // console.log(key, keyPath);
-      
-        // console.log(this.changeNavTitle);
+         console.log(key, keyPath);
       }
   }
 }

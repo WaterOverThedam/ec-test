@@ -6,10 +6,12 @@
 
 <script>
 export default {
-  name: 'HelloWorld',
+  name: 'home',
   data () {
     return {
     }
+  },
+  mounted:function(){
   }
 }
 </script>
