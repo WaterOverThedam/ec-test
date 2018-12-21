@@ -6,6 +6,7 @@ var myFun = {
     install: function (Vue, options) {
         Vue.prototype.convertor={
             toUni:function (str) {
+              str=str.replace(/'/ig,"quot;").replace(/\+/ig,"add;");
               return escape(str).toLocaleLowerCase().replace(/%u/gi, '\\u');
             },
             toGBK:function (str) {
@@ -38,20 +39,48 @@ var myFun = {
             return a;
         }
         Vue.prototype.fmtDate=fmtDate;
+        Vue.prototype.isEmpty=isEmpty;
+        Vue.prototype.fn_pager=fn_pager;
         Vue.filter('fmtDate', fmtDate);
-
-        function fmtDate(date, fmt) {
-            if(!date) return "";
+        Vue.filter('trim', trim);
+        
+        function fn_pager(str,option){
+            if(!(typeof option==="object"&&option.pageNow&&option.pageSize)){throw new Error("函数fn_pager的option参数不正确"); }
+            var header="with ";
+            if(/with.+as/.test(str)){
+              header=","
+            } 
+            if(/^(.*)(select\s*?)\/\*main\*\/(.*?)[;]?$/.test(str)){
+                var pager = "select * from p order by @order id"+(!option.sw?"":","+option.sw);
+                pager += " offset "+(option.pageNow-1)*option.pageSize+" rows fetch next "+option.pageSize+" rows only"
+                str = RegExp.$1+header+"p1 as("+RegExp.$2+RegExp.$3+"),p as(select * from p1 @c) select (select 0 errcode,'ok'errmsg,(select count(1) from p)total,isnull((@pager for json path),'[]')arr,'@sql'sql from (select 1 x)x for json path,without_array_wrapper)";
+                str = str.replace("@c",!option.condition?"":"where "+option.condition).replace("@pager",pager).replace("@order",option.order);
+            }else{
+                throw new Error("sql没有main标识！")
+            }
+            return str;
+        }
+        function trim(obj) {
+            if(obj){
+              return obj.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+            }
+            return '';
+        };
+        function fmtDate(dt, fmt) {
+            if(!dt) return "";
+            if(typeof dt=="string"){
+                dt = new Date(dt)
+            }
             fmt = fmt || "yyyy-MM-dd";
             if (/(y+)/.test(fmt)) {
-                fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length));
+                fmt = fmt.replace(RegExp.$1, (dt.getFullYear() + '').substr(4 - RegExp.$1.length));
             }
             let o = {
-                'M+': date.getMonth() + 1,
-                'd+': date.getDate(),
-                'h+': date.getHours(),
-                'm+': date.getMinutes(),
-                's+': date.getSeconds()
+                'M+': dt.getMonth() + 1,
+                'd+': dt.getDate(),
+                'h+': dt.getHours(),
+                'm+': dt.getMinutes(),
+                's+': dt.getSeconds()
             };
             for (let k in o) {
                 if (new RegExp(`(${k})`).test(fmt)) {
@@ -61,11 +90,26 @@ var myFun = {
             }
             return fmt;
         }
-        
+        function tags_format(tags){
+          return tags.reduce(function(prev, cur, index, array){
+                    if(typeof prev==="object"){
+                       return prev.key+":"+prev.label+";"+cur.key+":"+cur.label;
+                    }else{
+                      return prev+";"+cur.key+":"+cur.label;
+                    }
+                },"")
+        }
         function padLeftZero(str) {
             return ('00' + str).substr(str.length);
         }
-        
+        function isEmpty(obj)
+        {
+            for (var name in obj) 
+            {
+                return false;
+            }
+            return true;
+        }
     }
   }
 

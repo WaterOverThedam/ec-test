@@ -3,66 +3,87 @@
 
  <el-col :span="18">
 <el-card class="box-card">
-   <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-       
-
-          <el-form-item ref="username" label="姓名" prop="name" class="w-50">
-            <el-input v-model="ruleForm.name" size="100"></el-input>
+   <el-form @dblclick.native="goEdit()" :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+ 
+          <el-form-item ref="username" label="家长姓名"  prop="name" class="w-50">
+            <el-input :readonly="readonly" v-model="ruleForm.name" size="100"></el-input>
           </el-form-item> 
        
       
-          <el-form-item label="称呼" prop="othername" class="w-50">
-            <el-input v-model="ruleForm.othername" size="100"></el-input>
+          <el-form-item label="孩子"  prop="othername" class="w-50">
+            <el-input :readonly="readonly" v-model="ruleForm.othername" size="100"></el-input>
           </el-form-item> 
-       
         
-          <el-form-item label="性别" prop="sex" class="w-50">
+          <el-form-item label="性别" :readonly="readonly" prop="sex" class="w-50">
             <el-radio-group v-model="ruleForm.sex">
-            <el-radio label="男"></el-radio>
-            <el-radio label="女"></el-radio>
-            <el-radio label="未知"></el-radio>
+            <el-radio :disabled="readonly" label="男"></el-radio>
+            <el-radio :disabled="readonly" label="女"></el-radio>
+            <el-radio :disabled="readonly" label="未知"></el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item label="生日" prop="birth" class="w-50">
-            <el-date-picker type="date" placeholder="选择日期" v-model="ruleForm.birth" style="width: 100%;"></el-date-picker>
+            <el-date-picker :readonly="readonly" type="date" placeholder="选择日期" v-model="ruleForm.birth" style="width: 100%;"></el-date-picker>
           </el-form-item>
       
-          <el-form-item label="来源" prop="from" class="w-50">
-            <el-select v-model="ruleForm.from" filterable placeholder="请选择">
-                <el-option v-for="c of channels" :key="c.id" :label="c.name" :value="c.id"></el-option>
+          <el-form-item label="来源" prop="channel" class="w-50">
+            <el-select :disabled="readonly" v-model="ruleForm.channel" value-key="id" filterable placeholder="请选择">
+                <el-option v-for="c of channels" :key="c.id" :label="c.name" :value="c"></el-option>
             </el-select>
           </el-form-item>
 
-          <el-form-item label="分组" prop="group" class="w-50">
-            <el-select v-model="ruleForm.group" filterable placeholder="请选择">
+          <el-form-item label="分组" prop="group_selected" class="w-50">
+            <el-select :disabled="readonly" v-model="ruleForm.group_selected" filterable placeholder="请选择">
               <el-option v-for="(g,index) of clientlGrps" :key="index" :label="g.name" :value="g.name"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="手机" prop="phone"  class="w-50">
-              <el-input v-model="ruleForm.phone" size="100"></el-input>
+              <el-input :readonly="readonly" v-model="ruleForm.phone" size="100"></el-input>
           </el-form-item>
 
-          <el-form-item label="邮箱" prop="email" class="w-50">
-              <el-input v-model="ruleForm.email" size="100"></el-input>
+          <el-form-item label="邮箱" :readonly="readonly" prop="email" class="w-50">
+              <el-input :readonly="readonly" v-model="ruleForm.email" size="100"></el-input>
           </el-form-item>
       
         <!-- <el-form-item label="座机" prop="tel"  class="w-50">
             <el-input v-model="ruleForm.tel" size="100"></el-input>
         </el-form-item> -->
       
-        <el-form-item label="行业" prop="industry">
-            <el-input v-model="ruleForm.industry" size="100"></el-input>
+        <el-form-item label="行业" :readonly="readonly" prop="industry">
+            <el-input :readonly="readonly" v-model="ruleForm.industry" size="100"></el-input>
         </el-form-item>
-       <el-form-item label="地址" prop="address">
-            <el-input v-model="ruleForm.address" size="100"></el-input>
+       <el-form-item label="地址" :readonly="readonly" prop="address">
+            <el-input :readonly="readonly" v-model="ruleForm.address" size="100"></el-input>
         </el-form-item>
       
-        <el-form-item label="备注" prop="memo">
-            <el-input type="textarea" v-model="ruleForm.memo" :rows="10"></el-input>
+        <el-form-item label="备注" :readonly="readonly" prop="memo">
+            <el-input :readonly="readonly" type="textarea" v-model="ruleForm.memo" :rows="10"></el-input>
         </el-form-item>
+
+     
+        <el-form-item label="负责老师" prop="ls_selected" class="w-50">
+                <el-select style="margin-left: 20px;" :disabled="account.acl!='系统管理员'" v-model="ruleForm.ls_selected" default-first-option filterable placeholder="请选择老师">
+                    <el-option
+                      v-for="item in tutors"
+                      :key="item.id"
+                      :label="item.username"
+                      :value="item.id">
+                    </el-option>
+                </el-select>
+        </el-form-item> 
+        <el-form-item label="中心" prop="gym_selected" class="w-50">
+                <el-select style="margin-left: 20px;" :disabled="readonly" v-model="ruleForm.gym_selected" default-first-option filterable @change="get_ls()" 
+                placeholder="请选择中心">
+                    <el-option
+                      v-for="item in account.gyms"
+                      :key="item.code"
+                      :label="item.name"
+                      :value="JSON.stringify(item)">
+                    </el-option>
+                </el-select>
+        </el-form-item> 
         <el-form-item>
-            <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
-            <el-button @click="resetForm('ruleForm')">重置</el-button>
+            <el-button v-show="!readonly" type="primary" @click="submitForm('ruleForm')">保存</el-button>
+            <el-button v-show="!readonly" @click="resetForm('ruleForm')">重置</el-button>
         </el-form-item>
   </el-form>
 </el-card>
@@ -101,7 +122,7 @@
 
   <el-tag
       :key="id"
-      v-for="(tag,id) in Tags"
+      v-for="(tag,id) in ruleForm.Tags"
       closable
       :disable-transitions="false"
       @close="handleClose(id)">
@@ -135,8 +156,10 @@ import { mapState } from 'vuex';
       };
  
       return {
+        count:0,
+        tutors:[],
+        readonly: false,
         visible2: false,
-        Tags:[],
         color:[
           "#5199EB",
           "#54B983",
@@ -149,7 +172,7 @@ import { mapState } from 'vuex';
         ruleForm: {
           name: '',
           othername:'',
-          from: '',
+          channel: '',
           birth: '',
           industry: '',
           sex: '',
@@ -157,17 +180,22 @@ import { mapState } from 'vuex';
           email:'',
           phone:'',
           address:'',
-          group:'',
+          group_selected:'',
+          gym_selected:"",
+          ls_selected:"",
+          Tags:[],
         },
         rules: {
+          gym: [{ required: true, message: '请输选择中心', trigger: 'blur' }],
+          ls: [{ required: true, message: '请选择负责老师', trigger: 'blur' }],
           name: [
-            { required: true, message: '请输入客户名称', trigger: 'blur' },
-            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+            { required: true, message: '请输入客户名称', trigger: 'change' },
+            { min: 3, max: 15, message: '长度在 3 到 15 个字符', trigger: 'blur' }
           ],
-          from: [
+          channel: [
             { required: true, message: '请选择客户来源', trigger: 'change' }
           ],
-          group: [
+          group_selected: [
             { required: true, message: '请选择分组', trigger: 'change' }
           ],
           phone:[
@@ -196,6 +224,11 @@ import { mapState } from 'vuex';
       ...mapState([
         'account'
       ]),
+      obj_cur_gym:function(){
+          return  this.gym_selected &&
+                  JSON.parse(this.gym_selected)||
+                  {id:'',name:'',code:''}
+      },
       Temp:function(){
         var self=this;
         var arr=self.labelGrps.map(function(o){
@@ -212,6 +245,45 @@ import { mapState } from 'vuex';
       }
     },
     methods: {
+      ruleFormConv(){
+        var label_string = JSON.stringify(this.ruleForm.Tags);
+        var obj=this.extend({label:label_string,birth:this.fmtDate(this.ruleForm.birth)},this.ruleForm);
+        return obj;
+      },
+      tag_select(){
+        if(this.ruleForm.Tags.length==0) return;
+        var arr_tags=[];
+        this.ruleForm.Tags.map(function(t){
+            arr_tags[t.key]=t.label;
+        })
+        var self=this;
+        var arr=self.labelGrps.map(function(o){
+            if(arr_tags[o.name]){
+               o.tags.map(function(t){
+                 if(arr_tags[o.name]==t.name){
+                    t.iscolor=true;
+                 }
+              })
+            }
+
+        })
+      },
+      goEdit(){
+        if(!this.readonly) return true;
+        this.$confirm('是否要进入可编辑状态？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.readonly=false;
+          this.ruleForm.readonly=0;
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已放弃'
+          });       
+        });
+      },
       setTag(){
         if(this.labelGrps.length>0) return;
         this.$confirm('请先设置标签, 是否继续?', '提示', {
@@ -232,11 +304,15 @@ import { mapState } from 'vuex';
       },
       saveTage(){
         //console.log("save",JSON.stringify(this.Temp))
-        this.Tags = this.Temp;
+        //console.log("save",JSON.stringify(this.labelGrps))
+        this.ruleForm.Tags = this.Temp;
         this.visible2 =false;
       },
-      handleClose(id){
-       this.Tags.splice(id, 1);
+      async handleClose(id){
+          await this.goEdit();
+          if(!this.readonly){
+             this.ruleForm.Tags.splice(id, 1);
+          }
       },
       addTag(index,i){
         this.labelGrps[index].tags.map(function(t,j){
@@ -264,22 +340,17 @@ import { mapState } from 'vuex';
       },
       saveUser(formName){
         var self=this;
-        var sql_createuser = "declare @data varchar(max)=quot;@formquot;;insert into crm_zdytable_238592_27128_238592(org_id,cust_id,crm_syrID,create_time,crm_name/*phone*/,crmzdy_82068889/*name*/,crmzdy_82068921/*othername*/,crmzdy_82068894/*sex*/,crmzdy_82068891/*birth*/,crmzdy_82068892/*email*/,crmzdy_82068895/*addr*/,crmzdy_82068918/*industry*/,crmzdy_82068893/*group*/,crmzdy_82068919/*label*/,crmzdy_82068896/*memo*/)";
-        sql_createuser += "select top 1 238592,quot;@iduserquot;,quot;@iduserquot;,getdate(),JSON_VALUE(@data,quot;$.phonequot;),JSON_VALUE(@data,quot;$.namequot;),JSON_VALUE(@data,quot;$.othernamequot;),JSON_VALUE(@data,quot;$.sexquot;),JSON_VALUE(@data,quot;$.birthquot;),JSON_VALUE(@data,quot;$.emailquot;),JSON_VALUE(@data,quot;$.addressquot;),JSON_VALUE(@data,quot;$.industryquot;),JSON_VALUE(@data,quot;$.groupquot;),JSON_VALUE(@data,quot;$.labelquot;),JSON_VALUE(@data,quot;$.memoquot;) from crm_yh_238592_view;";
-        sql_createuser += "select 0 errmsg for json path";
-        var label_string = self.Tags.reduce(function(prev, cur, index, array){
-          if(typeof prev==="object"){
-            return prev.key+":"+prev.label+";"+cur.key+":"+cur.label;
-          }else if(prev==""){
-            return prev+cur.label;
-          }else{
-            return prev+";"+cur.key+":"+cur.label;
-          }
-        },"")
-        
-        var obj=this.extend({label:label_string,birth:self.fmtDate(self.ruleForm.birth)},self.ruleForm);
-        //console.log(JSON.stringify(obj));
-        sql_createuser = self.convertor.toUni(sql_createuser.replace('@form',JSON.stringify(obj)));
+        var sql_createuser = "declare @data varchar(max)=quot;@formquot;;declare @flag int =isnull((select top 1 1 from crm_zdytable_238592_27128_238592_view ec where crm_name=JSON_VALUE(@data,quot;$.phonequot;) and crmzdy_82326474=JSON_VALUE(@data,quot;$.gym_selectedquot;)),0);"
+        if(this.ruleForm.readonly===0){
+           sql_createuser = "update crm_zdytable_238592_27128_238592_view set isdelete=1 where crm_name='@phone';"+sql_createuser
+        }
+        sql_createuser += "insert into crm_zdytable_238592_27128_238592(org_id,cust_id,crm_syrID,create_time,crm_name/*phone*/,crmzdy_82068889/*name*/,crmzdy_82068921/*othername*/,crmzdy_82068894/*sex*/,crmzdy_82068891/*birth*/,crmzdy_82068892/*email*/,crmzdy_82068895/*addr*/,crmzdy_82068918/*industry*/,crmzdy_82068893/*group*/,crmzdy_82068919/*label*/,crmzdy_82068896/*memo*/,crmzdy_82326474/*gym*/,crmzdy_82068917/*channel*/)";
+        sql_createuser += "select top 1 238592,quot;@iduserquot;,JSON_VALUE(@data,quot;$.ls_selectedquot;),getdate(),JSON_VALUE(@data,quot;$.phonequot;),JSON_VALUE(@data,quot;$.namequot;),JSON_VALUE(@data,quot;$.othernamequot;),JSON_VALUE(@data,quot;$.sexquot;),JSON_VALUE(@data,quot;$.birthquot;),JSON_VALUE(@data,quot;$.emailquot;),JSON_VALUE(@data,quot;$.addressquot;),JSON_VALUE(@data,quot;$.industryquot;),JSON_VALUE(@data,quot;$.group_selectedquot;),JSON_VALUE(@data,quot;$.labelquot;),JSON_VALUE(@data,quot;$.memoquot;),JSON_VALUE(@data,quot;$.gym_selectedquot;),JSON_query(@data,quot;$.channelquot;) from crm_yh_238592_view where @flag=0;";
+        sql_createuser += "select case when @flag=1 then 2 else 0 end errmsg for json path";
+
+        //console.log(JSON.stringify(obj));return;
+        sql_createuser = sql_createuser.replace('@form',JSON.stringify(self.ruleFormConv()));
+        sql_createuser = sql_createuser.replace('@phone',self.ruleForm.phone);
         self.$store.commit({
             type:"get_data",
             sql:sql_createuser,
@@ -290,7 +361,14 @@ import { mapState } from 'vuex';
                     message: '保存成功！',
                     type: 'success'
                   });
+                  self.updateStore();
                   self.resetForm(formName);
+              }else if(data&&data[0].errmsg==2&&!self.$route.query.name){
+                  self.$message({
+                    showClose: true,
+                    message: '该手机号的客户记录已存在！请勿重复录入！',
+                    type: 'warning'
+                  });
               }else{
                   self.$message({
                     showClose: true,
@@ -303,8 +381,10 @@ import { mapState } from 'vuex';
       },
       resetForm(formName) {
         this.$refs[formName].resetFields();
-        this.Tags=[];
+        this.ruleForm.Tags=[];
         this.$refs.username.$el.querySelector('input').focus();
+        this.ruleForm.gym_selected=JSON.stringify(this.account.gyms[0]);
+        this.ruleForm.ls_selected=this.account.id;
       },
       getChannel(){
         var self=this;
@@ -316,12 +396,52 @@ import { mapState } from 'vuex';
               self.channels=data;
             }
         })
+       },
+       get_ls(){
+          var cur_gym = null;
+          if(this.gym_selected){
+             cur_gym = this.obj_cur_gym && this.obj_cur_gym.name;
+          }
+          var self=this;
+          self.$store.commit({
+              type:"get_ls",
+              cur_gym:cur_gym,
+              func:function(data){
+                if(data){
+                  self.tutors=data
+                  //console.log(JSON.stringify(data))
+                }
+              }
+          })
       },
       init(){
+        if(this.ruleForm.readonly && this.ruleForm.readonly==1){
+           this.readonly=true;
+        }
+        //console.error(JSON.stringify(this.ruleForm))
         this.get_tag();
         this.getChannel();
         this.get_clie_group();
-      }
+        this.ruleForm.gym_selected=JSON.stringify(this.account.gyms[0]);
+        this.get_ls();
+        this.ruleForm.ls_selected=this.account.id;
+        //this.Temp=this.ruleForm.Tags;
+      },
+      updateStore:function(){
+          var phone=this.ruleForm.phone;
+          var clientData = this.$store.state.tbl.clientData;
+          if(clientData){
+              var id=clientData.findIndex(function(v){
+                  return v.phone==phone;
+              });
+              if(id!=-1){
+                 this.$store.state.tbl.clientData[id]=this.ruleFormConv();
+              }
+              // console.log(id)
+              // console.log(this.$store.state.tbl.clientData)
+              // console.log(this.$store.state.tbl.clientData[id])
+          }
+       }
     },
     watch:{
         account:function(){
@@ -330,14 +450,20 @@ import { mapState } from 'vuex';
         }
     },
     mounted(){
-      this.init();
       //console.log(JSON.stringify(this.$store.state.client))
       if(this.$store.state.client){
          this.ruleForm=this.$store.state.client;
       }
+      this.init();
     },
     destroyed(){
+      //alert(this.ruleForm.readonly===undefined)
+      if(this.ruleForm.readonly===undefined){
          this.$store.state.client=this.ruleForm;
+      }else{
+         this.$store.state.client=null;
+      }
+      this.readonly=false;
     }
   }
 </script> 
@@ -382,6 +508,7 @@ import { mapState } from 'vuex';
   .clearfix:after {
     clear: both
   }
-
+ 
+ 
 </style>
 

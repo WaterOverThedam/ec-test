@@ -165,7 +165,7 @@ import { mapState } from 'vuex'
       },
       sync(){
         var res = JSON.stringify(this.labelGrps);
-        var sql = "update yzx set crmzdy_82069676=quot;@resquot; from crm_zdytable_238592_26580_238592_view yzx where crmzdy_82004682=@gymcode;select 0 errcode  for json path";
+        var sql = "update yzx set crmzdy_82069676=quot;@resquot; from crm_zdytable_238592_26580_238592_view yzx where crmzdy_82004682=@gymcode;select 0 errcode for json path";
         sql = sql.replace("@res",res)
         sql=this.convertor.toUni(sql);
         this.$store.commit({

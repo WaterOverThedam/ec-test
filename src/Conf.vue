@@ -1,6 +1,7 @@
 <script>
-        const env_cur="test";
+        const env_cur="prod";
         const requestUrl="https://bbk.800app.com/uploadfile/staticresource/238592/279833/api_auto_json.aspx";
+        const ecUrl="https://bbk.800app.com/uploadfile/staticresource/238592/279833/dataInterface_sync_ec.aspx";
         const evnData={
                 //test:{baseUrl:"http://localhost:8888"},
                 test:{baseUrl:"http://localhost"},
@@ -12,7 +13,8 @@
         {
             env_cur,
             evnData,
-            requestUrl
+            requestUrl,
+            ecUrl
         }
 </script>
 

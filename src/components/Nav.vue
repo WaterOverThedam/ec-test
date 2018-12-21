@@ -77,14 +77,13 @@
               <!-- <el-menu-item index="1">EC客户端</el-menu-item> -->
               <el-breadcrumb separator="/">
                 <el-breadcrumb-item :to="{ path: '/' }">EC客户端</el-breadcrumb-item>
-                <el-breadcrumb-item>{{$route.name}}</el-breadcrumb-item>
+                <el-breadcrumb-item>{{$route.query&&$route.query.name||$route.name}}</el-breadcrumb-item>
               </el-breadcrumb>
             </el-menu>
           </el-header>
           <el-main>
 
             <router-view/>
-
 
           </el-main>
         </el-container>
@@ -118,6 +117,9 @@ export default {
         console.log(this.$route.name)
          console.log(key, keyPath);
       }
+  },
+  mounted(){
+    //console.error(JSON.stringify(this.$route.query))
   }
 }
 </script>
